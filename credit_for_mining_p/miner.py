@@ -3,6 +3,7 @@ import requests
 import json
 import sys
 from blockchain import Blockchain
+from uuid import uuid4
 
 valid_proof = Blockchain.valid_proof
 # TODO: Implement functionality to search for a proof
@@ -23,12 +24,27 @@ def proof_of_work(block):
 
     return proof
 
+def get_recipient_id():
+    id_file = open('my_id.txt', 'r')
+
+    id = id_file.read()
+    if len(id) > 0:
+        return id
+    else:
+        id_file = open('my_id.txt', 'w')
+        id_file.write(str(uuid4()).replace('-', ''))
+        id_file = open('my_id.txt', 'r')
+        id = id_file.read()
+        print(f"Created new id {id}")
+        return id
+
 if __name__ == '__main__':
     # What node are we interacting with?
     if len(sys.argv) > 1:
         node = sys.argv[1]
     else:
         node = "http://localhost:5000"
+
 
     coins_mined = 0
     # Run forever until interrupted
@@ -37,8 +53,9 @@ if __name__ == '__main__':
         r = requests.get(url=f"{node}/last_block")
         block = r.json()['block']
         proof = proof_of_work(block)
+        data = {"proof": proof, "recipient_id": get_recipient_id()}
         # TODO: When found, POST it to the server {"proof": new_proof}
-        mine_request = requests.post(url=f"{node}/mine", json = {"proof": proof})
+        mine_request = requests.post(url=f"{node}/mine", json = data)
         data = mine_request.json()
         # TODO: We're going to have to research how to do a POST in Python
         # HINT: Research `requests` and remember we're sending our data as JSON

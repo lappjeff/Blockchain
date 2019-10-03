@@ -139,8 +139,6 @@ class Blockchain(object):
 
 # Instantiate our Node
 app = Flask(__name__)
-# Generate a globally unique address for this node
-node_identifier = str(uuid4()).replace('-', '')
 
 # Instantiate the Blockchain
 blockchain = Blockchain()
@@ -152,6 +150,7 @@ def mine():
     # proof = blockchain.proof_of_work(blockchain.last_block)
     #recieve proof_of_work
     proof = req_data['proof']
+    recipient_id = req_data.get('recipient_id')
     # We must receive a reward for finding the proof.
     # TODO:
     # The sender is "0" to signify that this node has mine a new coin
@@ -159,7 +158,7 @@ def mine():
     # The amount is 1 coin as a reward for mining the next block
     blockchain.new_transaction(
         sender = "0",
-        recipient = node_identifier,
+        recipient = recipient_id,
         amount = 1
     )
     # Forge the new Block by adding it to the chain
