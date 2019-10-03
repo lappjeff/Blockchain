@@ -84,22 +84,6 @@ class Blockchain(object):
     def last_block(self):
         return self.chain[-1]
 
-    def proof_of_work(self, block):
-        """
-        Simple Proof of Work Algorithm
-        Find a number p such that hash(last_block_string, p) contains 6 leading
-        zeroes
-        :return: A valid proof for the provided block
-        """
-
-        block_string = json.dumps(block, sort_keys=True).encode()
-
-        proof = 0
-        while self.valid_proof(block_string, proof) is False:
-            proof += 1
-
-        return proof
-
     @staticmethod
     def valid_proof(block_string, proof):
         """
